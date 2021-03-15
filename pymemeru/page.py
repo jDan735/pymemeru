@@ -13,6 +13,10 @@ async def page(name):
     ])
 
     soup = BeautifulSoup(text, "lxml")
-    image = soup.find_all("figure", {"class": "s-post-media-img"})[0].img["src"]
+
+    try:
+        image = soup.find_all("figure", {"class": "s-post-media-img"})[0].img["src"]
+    except IndexError:
+        image = ""
 
     return [image, parsed.replace("•", "")]
