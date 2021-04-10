@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-from tghtml import tghtml
+from tghtml import TgHTML
 
 from .aioget import aioget
 
