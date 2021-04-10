@@ -9,7 +9,7 @@ setup(
     version=__version__,
     author="Daniel Zakharov",
     author_email="daniel734@bk.ru",
-    description="memepedia.ru parser for python ",
+    description="memepedia.ru parser for python",
     long_description=long_description,
     long_description_content_type="text/markdown",
     keywords="memepedia python",

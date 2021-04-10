@@ -6,11 +6,11 @@ from .aioget import aioget
 
 async def page(name):
     text = await aioget(f"https://memepedia.ru/{name}/")
-    parsed = tghtml(text, [
+    parsed = TgHTML(text, [
         ["section"],
         ["ul"], ["ol"], ["li"],
         ["div", {"class": "mistape_caption"}]
-    ])
+    ]).parsed
 
     soup = BeautifulSoup(text, "lxml")
 
