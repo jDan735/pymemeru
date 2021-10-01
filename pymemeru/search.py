@@ -4,12 +4,12 @@ from .aioget import aioget
 
 
 async def search(query):
-    results = []
-    page = await aioget(f"https://memepedia.ru", {"s": query})
+    page = await aioget("https://memepedia.ru", {"s": query})
     soup = BeautifulSoup(page, "lxml")
 
     ul = soup.find("ul", {"class": "post-items"})
-    
+    results = []
+
     for li in ul.find_all("li"):
         article = li.find("article")
         content = article.find_all("div", {"class": "content"})[0]
