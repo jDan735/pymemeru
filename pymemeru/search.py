@@ -1,9 +1,10 @@
 from bs4 import BeautifulSoup
 
+from .models import Search, SearchResult
 from .aioget import aioget
 
 
-async def search(query):
+async def search(query: str) -> list[SearchResult]:
     page = await aioget("https://memepedia.ru", {"s": query})
     soup = BeautifulSoup(page, "lxml")
 
@@ -19,4 +20,4 @@ async def search(query):
             "name": content.header.h2.a["href"][21:-1]
         })
 
-    return results
+    return Search.parse_obj(results).__root__
