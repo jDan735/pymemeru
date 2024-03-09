@@ -20,4 +20,4 @@ async def search(query: str) -> list[SearchResult]:
             "name": content.header.h2.a["href"][21:-1]
         })
 
-    return Search.parse_obj(results).__root__
+    return Search.model_validate(results).root

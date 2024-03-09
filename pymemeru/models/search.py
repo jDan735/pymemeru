@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, RootModel
 
 
 class SearchResult(BaseModel):
@@ -6,5 +6,4 @@ class SearchResult(BaseModel):
     name: str
 
 
-class Search(BaseModel):
-    __root__: list[SearchResult]
+Search = RootModel[list[SearchResult]]
