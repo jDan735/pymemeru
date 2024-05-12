@@ -7,7 +7,7 @@ class Trending(BaseModel):
     title: str
     url: str
 
-    views: str = 0
+    views: str = "0"
 
 
 class Page(BaseModel):
@@ -25,7 +25,7 @@ class Page(BaseModel):
 
     @property
     def cleared_text(self) -> BeautifulSoup:
-        soup = BeautifulSoup(self.text)
+        soup = BeautifulSoup(self.text, features="lxml")
 
         for tag in [
             *soup.find_all("time"),
@@ -35,7 +35,8 @@ class Page(BaseModel):
             *soup.find_all("div", class_=["mistape_caption", "share-box"]),
             *soup.find_all("h1"),
             *soup.find_all("hr"),
-            *soup.find_all("figure", class_="bb-mb-el")
+            *soup.find_all("figure", class_="bb-mb-el"),
+            *soup.find_all("div", class_="tds-message-box"),
         ]:
             tag.replace_with("")
 
@@ -45,12 +46,31 @@ class Page(BaseModel):
         for tag in soup.find_all("span", class_="su-quote-cite"):
             tag.name = "cite"
 
+        for tag in soup.find_all("h2"):
+            if tag.text in ("Галерея", "Читайте также"):
+                tag.replace_with("")
+
         for tag in soup.find_all("a"):
             if tag["href"] == "https://t.me/memepedia_Ru":
                 tag.replace_with("")
 
+        for tag in soup.find_all("div", class_="wc-comment-text"):
+            tag.replace_with(
+                "\n\n".join(
+                    map(
+                        lambda x: f"<blockquote>{x}</blockquote>JDAN_EXTRA_SPACE",
+                        tag.stripped_strings,
+                    )
+                )
+            )
+
+        for tag in soup.find_all("em", recursive=True):
+            tag.replace_with(f"<blockquote>{tag.text}</blockquote>JDAN_EXTRA_SPACE")
+
         for tag in soup.find_all("a"):
             if tag["href"].startswith("https://memepedia.ru/"):
-                tag["href"] = "/memepedia/" + tag["href"].removeprefix("https://memepedia.ru/")
+                tag["href"] = "/memepedia/" + tag["href"].removeprefix(
+                    "https://memepedia.ru/"
+                )
 
         return soup
