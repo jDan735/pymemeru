@@ -3,7 +3,7 @@ name = "pymemeru"
 version = "0.2.4"
 description = "memepedia.ru parser for python"
 authors = [
-    {name = "Daniel Zakharov", email = "<gzdan734@gmail.com>"}
+    {name = "Daniel Zakharov", email = "gzdan734@gmail.com"}
 ]
 
 readme = "README.md"
