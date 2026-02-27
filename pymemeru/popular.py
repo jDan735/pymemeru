@@ -5,7 +5,7 @@ from .aioget import aioget
 
 
 async def popular() -> list[Trending]:
-    page = await aioget(f"https://memepedia.ru/memoteka/")
+    _, page = await aioget(f"https://memepedia.ru/memoteka/")
 
     soup = BeautifulSoup(page, "lxml")
 

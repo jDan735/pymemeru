@@ -5,7 +5,7 @@ from .aioget import aioget
 
 
 async def search(query: str) -> list[SearchResult]:
-    page = await aioget("https://memepedia.ru", {"s": query})
+    _, page = await aioget("https://memepedia.ru", {"s": query})
     soup = BeautifulSoup(page, "lxml")
 
     ul = soup.find("ul", {"class": "post-items"})

@@ -5,7 +5,7 @@ from .aioget import aioget
 
 
 async def page(name: str) -> Page:
-    page = await aioget(f"https://memepedia.ru/{name}/")
+    _, page = await aioget(f"https://memepedia.ru/{name}/")
 
     soup = BeautifulSoup(page, "lxml")
     post = soup.find_all(class_="s-post-main")[0]
