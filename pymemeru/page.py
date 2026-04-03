@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-
+from msgspec import convert
 from .models import Page, Trending
 from .aioget import aioget
 
@@ -31,7 +31,7 @@ async def page(name: str) -> Page:
     except:
         comments = "0"
 
-    return Page(
+    _ = Page(
         title=post.h1.text,
         published_at=post.find_all("time", class_="published")[0].text,
         author_name=(
@@ -59,3 +59,5 @@ async def page(name: str) -> Page:
             for trending in trending_
         ],
     )
+
+    return convert(_, Page)

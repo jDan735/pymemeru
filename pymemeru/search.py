@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 
 from .models import Search, SearchResult
+from msgspec import convert
 from .aioget import aioget
 
 
@@ -20,4 +21,4 @@ async def search(query: str) -> list[SearchResult]:
             "name": content.header.h2.a["href"][21:-1]
         })
 
-    return Search.model_validate(results).root
+    return convert(results, Search)

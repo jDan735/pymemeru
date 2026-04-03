@@ -1,9 +1,9 @@
-from pydantic import BaseModel, RootModel
+from msgspec import Struct
 
 
-class SearchResult(BaseModel):
+class SearchResult(Struct, frozen=True):
     title: str
     name: str
 
 
-Search = RootModel[list[SearchResult]]
+Search = list[SearchResult]

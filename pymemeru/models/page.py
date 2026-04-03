@@ -1,8 +1,8 @@
-from pydantic import BaseModel
+from msgspec import Struct
 from bs4 import BeautifulSoup
 
 
-class Trending(BaseModel):
+class Trending(Struct, frozen=True):
     preview: str
     title: str
     url: str
@@ -10,7 +10,7 @@ class Trending(BaseModel):
     views: str = "0"
 
 
-class Page(BaseModel):
+class Page(Struct, frozen=True):
     title: str
     published_at: str
 
