@@ -33,7 +33,7 @@ async def page(name: str) -> Page:
         views=(sel.css_first("span.post-views span.count").text()),
         comments=comments,
         main_image=image,
-        text=str(post),
+        text=post.html,
         trending=[
             Trending(
                 preview=trending.css_first("img").attributes.get("src"),

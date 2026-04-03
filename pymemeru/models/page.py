@@ -1,5 +1,15 @@
 from msgspec import Struct
 from bs4 import BeautifulSoup
+from selectolax.lexbor import LexborHTMLParser, LexborNode, create_tag
+
+
+def stripped_strings(node: LexborNode):
+    for desc in node.traverse(include_text=True):
+        if desc.is_text_node:
+            text = desc.text().strip()
+
+            if text:
+                yield text
 
 
 class Trending(Struct, frozen=True):
@@ -24,53 +34,69 @@ class Page(Struct, frozen=True):
     trending: list[Trending]
 
     @property
-    def cleared_text(self) -> BeautifulSoup:
-        soup = BeautifulSoup(self.text, features="lxml")
+    def cleared_text(self) -> str:
+        sel = LexborHTMLParser(self.text)
 
         for tag in [
-            *soup.find_all("time"),
-            *soup.find_all("img", class_=["avatar"]),
-            *soup.find_all("span", class_=["count"]),
-            *soup.find_all("span", itemprop="name"),
-            *soup.find_all("div", class_=["mistape_caption", "share-box"]),
-            *soup.find_all("h1"),
-            *soup.find_all("hr"),
-            *soup.find_all("figure", class_="bb-mb-el"),
-            *soup.find_all("div", class_="tds-message-box"),
+            *sel.css("time"),
+            *sel.css("img.avatar"),
+            *sel.css("span.count"),
+            *sel.css('span[itemprop="name"]'),
+            *sel.css("div.mistape_caption, div.share-box"),
+            *sel.css("h1"),
+            *sel.css("hr"),
+            *sel.css("figure.bb-mb-el"),
+            *sel.css("div.tds-message-box"),
+            *sel.css("div.clearfix"),
+            *sel.css("div.twitter-tweet"),
         ]:
             tag.replace_with("")
 
-        for tag in soup.find_all("div", class_="su-quote-inner"):
-            tag.name = "blockquote"
+        for tag in sel.css("div.su-quote-inner"):
+            new_tag = create_tag("blockquoter")
+            new_tag.insert_child(tag.inner_html)
 
-        for tag in soup.find_all("span", class_="su-quote-cite"):
-            tag.name = "cite"
+            tag.replace_with(new_tag)
 
-        for tag in soup.find_all("h2"):
-            if tag.text in ("Галерея", "Читайте также"):
+        for tag in sel.css("span.su-quote-cite"):
+            new_tag = create_tag("cite")
+            new_tag.insert_child(tag.inner_html)
+
+            tag.replace_with(new_tag)
+
+        for tag in sel.css("h2"):
+            if tag.text() in ("Галерея", "Читайте также"):
                 tag.replace_with("")
 
-        for tag in soup.find_all("a"):
-            if tag["href"] == "https://t.me/memepedia_Ru":
+        for tag in sel.css("a"):
+            if tag.attrs["href"] == "https://t.me/memepedia_Ru":
                 tag.replace_with("")
 
-        for tag in soup.find_all("div", class_="wc-comment-text"):
+        for tag in sel.css("div.wc-comment-text"):
             tag.replace_with(
-                "\n\n".join(
-                    map(
-                        lambda x: f"<blockquote>{x}</blockquote>JDAN_EXTRA_SPACE",
-                        tag.stripped_strings,
+                LexborHTMLParser(
+                    "\n\n".join(
+                        map(
+                            lambda x: f"<blockquote>{x}</blockquote>",
+                            stripped_strings(tag),
+                        )
                     )
-                )
+                ).root
+                or ""
             )
 
-        for tag in soup.find_all("em", recursive=True):
-            tag.replace_with(f"<blockquote>{tag.text}</blockquote>JDAN_EXTRA_SPACE")
+        # for tag in sel.css("em"):
+        #     _ = LexborHTMLParser(f"<blockquote>{tag.text()}</blockquote>")
+        #     tag.replace_with(_.root or "")
 
-        for tag in soup.find_all("a"):
-            if tag["href"].startswith("https://memepedia.ru/"):
-                tag["href"] = "/memepedia/" + tag["href"].removeprefix(
-                    "https://memepedia.ru/"
-                )
+        for tag in sel.css("h2"):
+            _ = LexborHTMLParser(f"<b>{tag.text()}</b>\n")
+            tag.replace_with(_.root or "")
 
-        return soup
+        for tag in sel.css("a"):
+            if tag.attrs.get("href", "").startswith("https://memepedia.ru/"):
+                tag.attrs["href"] = "/memepedia/" + tag.attrs.get(
+                    "href", ""
+                ).removeprefix("https://memepedia.ru/")
+
+        return sel.html
