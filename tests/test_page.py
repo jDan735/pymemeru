@@ -8,7 +8,7 @@ import pymemeru
 
 class TestPage:
     @pytest.mark.asyncio
-    async def test_search(self):
+    async def test_page(self):
         page = await pymemeru.page("arestovannyj-viktor-medvedchuk")
 
         assert page.title == "Арестованный Виктор Медведчук"
@@ -20,7 +20,7 @@ class TestPage:
         assert page.text != ""
 
     @pytest.mark.asyncio
-    async def test_search2(self):
+    async def test_page2(self):
         page = await pymemeru.page("ne-vse-tak-odnoznachno")
 
         assert page.title == "Не все так однозначно"

@@ -1,6 +1,6 @@
 [project]
 name = "pymemeru"
-version = "0.2.5"
+version = "0.3.0"
 description = "memepedia.ru parser for python"
 authors = [
     {name = "Daniel Zakharov", email = "gzdan734@gmail.com"}
@@ -11,18 +11,8 @@ requires-python = ">=3.10"
 license = "MIT"
 dependencies = [
     "aiohttp>=3.13.3",
-    "beautifulsoup4>=4.11.1",
-    "domselect>=0.0.6",
     "msgspec>=0.20.0",
-]
-
-[project.optional-dependencies]
-selectolax = [
     "selectolax>=0.4.7",
-]
-
-lxml = [
-    "lxml>=6.0.0",
 ]
 
 [dependency-groups]

@@ -1,24 +1,27 @@
-from bs4 import BeautifulSoup
-
-from .models import Search, SearchResult
 from msgspec import convert
+from selectolax.lexbor import LexborHTMLParser
+
 from .aioget import aioget
+from .models import Search, SearchResult
 
 
 async def search(query: str) -> list[SearchResult]:
     _, page = await aioget("https://memepedia.ru", {"s": query})
-    soup = BeautifulSoup(page, "lxml")
 
-    ul = soup.find("ul", {"class": "post-items"})
+    sel = LexborHTMLParser(page)
+    ul = sel.css_first("ul.post-items")
+
     results = []
 
-    for li in ul.find_all("li"):
-        article = li.find("article")
-        content = article.find_all("div", {"class": "content"})[0]
+    for li in ul.css("li"):
+        article = li.css_first("article")
+        content = article.css_first("div.content")
 
-        results.append({
-            "title": content.header.h2.a.text,
-            "name": content.header.h2.a["href"][21:-1]
-        })
+        results.append(
+            dict(
+                title=content.css_first("header h2 a").text(),
+                name=content.css_first("header h2 a").attributes.get("href")[21:-1],
+            )
+        )
 
     return convert(results, Search)
