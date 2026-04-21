@@ -1,5 +1,4 @@
 from msgspec import Struct
-from bs4 import BeautifulSoup
 from selectolax.lexbor import LexborHTMLParser, LexborNode, create_tag
 
 
